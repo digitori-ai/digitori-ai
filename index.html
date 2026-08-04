@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digitori — Digital Factory · AI as a Service</title>
+<meta name="description" content="Digitori is an autonomous AI agent workforce — BA, SA, Dev, Tester, DevOps — that ships your software from goal to verified output. Built on the S4 Goal Driven Development philosophy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05060f;
+  --bg2:#0a0d1e;
+  --card:rgba(255,255,255,.035);
+  --card-hover:rgba(255,255,255,.06);
+  --stroke:rgba(255,255,255,.08);
+  --stroke2:rgba(255,255,255,.14);
+  --txt:#e8eaf6;
+  --muted:#8b91b0;
+  --dim:#5c6280;
+  --indigo:#6366f1;
+  --violet:#a855f7;
+  --cyan:#22d3ee;
+  --green:#34d399;
+  --amber:#fbbf24;
+  --rose:#fb7185;
+  --grad:linear-gradient(90deg,#6366f1,#a855f7 50%,#22d3ee);
+  --radius:18px;
+  --font-h:'Space Grotesk',sans-serif;
+  --font-b:'Inter',sans-serif;
+  --font-m:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--font-b);overflow-x:hidden;line-height:1.6}
+::selection{background:rgba(99,102,241,.4)}
+h1,h2,h3,h4{font-family:var(--font-h);line-height:1.15;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mono{font-family:var(--font-m)}
+
+/* ---------- background fx ---------- */
+.bgfx{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden}
+.bgfx .grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,black 30%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,black 30%,transparent 75%);}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.5;animation:drift 18s ease-in-out infinite alternate}
+.orb.o1{width:560px;height:560px;background:radial-gradient(circle,#4338ca,transparent 65%);top:-180px;left:8%}
+.orb.o2{width:480px;height:480px;background:radial-gradient(circle,#0e7490,transparent 65%);top:-120px;right:4%;animation-delay:-6s}
+.orb.o3{width:420px;height:420px;background:radial-gradient(circle,#7e22ce,transparent 65%);top:38%;left:-160px;opacity:.3;animation-delay:-12s}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(50px,40px) scale(1.08)}}
+
+/* ---------- nav ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:rgba(5,6,15,.65);border-bottom:1px solid var(--stroke)}
+.nav-in{max-width:1180px;margin:0 auto;padding:0 24px;height:66px;display:flex;align-items:center;gap:28px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-h);font-weight:700;font-size:20px;letter-spacing:-.02em}
+.logo-mark{width:32px;height:32px;flex:none}
+.nav-links{display:flex;gap:26px;margin-left:auto;font-size:14px;color:var(--muted)}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:var(--txt)}
+.lang-sw{display:flex;border:1px solid var(--stroke2);border-radius:99px;overflow:hidden;font-size:12px;font-family:var(--font-m)}
+.lang-btn{padding:5px 12px;background:none;border:none;color:var(--dim);cursor:pointer;font-family:inherit;font-size:inherit;transition:.2s}
+.lang-btn.active{background:rgba(99,102,241,.25);color:var(--txt)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:.25s;font-family:var(--font-b)}
+.btn-primary{background:var(--grad);background-size:200% 100%;color:#fff;box-shadow:0 0 24px rgba(99,102,241,.45)}
+.btn-primary:hover{background-position:100% 0;box-shadow:0 0 38px rgba(99,102,241,.65);transform:translateY(-1px)}
+.btn-ghost{border-color:var(--stroke2);color:var(--txt);background:rgba(255,255,255,.03)}
+.btn-ghost:hover{border-color:var(--indigo);background:rgba(99,102,241,.1)}
+.btn-sm{padding:8px 16px;font-size:13px;border-radius:10px}
+@media(max-width:900px){.nav-links{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:150px 0 60px;text-align:center;position:relative}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:99px;border:1px solid rgba(99,102,241,.4);
+  background:rgba(99,102,241,.1);font-size:13px;color:#c7cbff;font-family:var(--font-m)}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{font-size:clamp(40px,6.2vw,74px);font-weight:700;margin:26px auto 22px;max-width:950px}
+.hero .sub{font-size:clamp(16px,1.7vw,19px);color:var(--muted);max-width:760px;margin:0 auto 36px}
+.hero .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.stats{display:flex;justify-content:center;gap:56px;margin-top:64px;flex-wrap:wrap}
+.stat .num{font-family:var(--font-h);font-size:34px;font-weight:700}
+.stat .lbl{font-size:13px;color:var(--dim);margin-top:2px}
+
+/* ---------- pipeline visual ---------- */
+.pipeline{margin:70px auto 0;max-width:940px;border:1px solid var(--stroke);border-radius:20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+  padding:26px 30px;position:relative;overflow:hidden;backdrop-filter:blur(8px)}
+.pipeline::before{content:'';position:absolute;inset:-1px;border-radius:20px;padding:1px;
+  background:linear-gradient(120deg,rgba(99,102,241,.5),transparent 30%,transparent 70%,rgba(34,211,238,.5));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.pipe-head{display:flex;align-items:center;gap:10px;font-family:var(--font-m);font-size:12px;color:var(--dim);margin-bottom:20px}
+.pipe-head .live{color:var(--green);display:flex;align-items:center;gap:6px;margin-left:auto}
+.pipe-head .live::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.6s infinite}
+.pipe-flow{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.pipe-node{flex:1;min-width:120px;text-align:center;padding:16px 8px;border-radius:14px;border:1px solid var(--stroke);background:rgba(255,255,255,.03);position:relative;transition:.3s}
+.pipe-node .ic{font-size:22px}
+.pipe-node .nm{font-family:var(--font-h);font-weight:600;font-size:14px;margin-top:6px}
+.pipe-node .st{font-family:var(--font-m);font-size:10.5px;margin-top:4px;color:var(--dim)}
+.pipe-node.done{border-color:rgba(52,211,153,.4)}.pipe-node.done .st{color:var(--green)}
+.pipe-node.act{border-color:rgba(99,102,241,.65);background:rgba(99,102,241,.12);box-shadow:0 0 26px rgba(99,102,241,.25)}
+.pipe-node.act .st{color:#a5b4fc}
+.pipe-arrow{color:var(--dim);font-size:15px;flex:none}
+@media(max-width:760px){.pipe-arrow{display:none}.pipe-node{min-width:calc(50% - 6px)}}
+
+/* ---------- sections ---------- */
+section{padding:96px 0;position:relative}
+.sec-tag{font-family:var(--font-m);font-size:13px;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase}
+.sec-title{font-size:clamp(28px,3.6vw,44px);font-weight:700;margin:14px 0 14px}
+.sec-sub{color:var(--muted);max-width:680px;font-size:16.5px}
+.center{text-align:center}.center .sec-sub{margin:0 auto}
+
+/* integrations strip */
+.strip{padding:34px 0;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke);background:rgba(255,255,255,.015)}
+.strip .lbl{text-align:center;font-family:var(--font-m);font-size:12px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.chip{display:flex;align-items:center;gap:9px;padding:9px 18px;border-radius:99px;border:1px solid var(--stroke);
+  background:rgba(255,255,255,.03);font-size:14px;font-weight:500;color:var(--muted);transition:.25s}
+.chip:hover{border-color:var(--stroke2);color:var(--txt);transform:translateY(-2px)}
+.chip svg{width:17px;height:17px;flex:none}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:54px}
+.step{border:1px solid var(--stroke);border-radius:var(--radius);padding:30px 26px;background:var(--card);position:relative;transition:.3s;backdrop-filter:blur(6px)}
+.step:hover{background:var(--card-hover);border-color:var(--stroke2);transform:translateY(-4px)}
+.step .n{font-family:var(--font-m);font-size:13px;color:var(--cyan)}
+.step h3{font-size:21px;margin:12px 0 10px}
+.step p{color:var(--muted);font-size:14.5px}
+.type-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.tchip{font-family:var(--font-m);font-size:11.5px;padding:5px 12px;border-radius:8px;border:1px solid}
+.tchip.g{color:var(--green);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.08)}
+.tchip.b{color:var(--amber);border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08)}
+.tchip.m{color:var(--cyan);border-color:rgba(34,211,238,.35);background:rgba(34,211,238,.08)}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
+
+/* agents */
+.agents-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:54px}
+.agent{border:1px solid var(--stroke);border-radius:var(--radius);padding:28px 26px;background:var(--card);transition:.3s;position:relative;overflow:hidden;backdrop-filter:blur(6px)}
+.agent::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--indigo));opacity:0;transition:.3s}
+.agent:hover{background:var(--card-hover);border-color:var(--stroke2);transform:translateY(-4px)}
+.agent:hover::after{opacity:1}
+.agent .av{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;
+  background:color-mix(in srgb,var(--ac,var(--indigo)) 14%,transparent);border:1px solid color-mix(in srgb,var(--ac,var(--indigo)) 35%,transparent)}
+.agent h3{font-size:19px;margin:16px 0 4px}
+.agent .role{font-family:var(--font-m);font-size:11.5px;color:var(--ac,var(--indigo));letter-spacing:.06em;text-transform:uppercase}
+.agent p{color:var(--muted);font-size:14px;margin-top:10px}
+.agent .tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.agent .tools span{font-family:var(--font-m);font-size:10.5px;color:var(--dim);border:1px solid var(--stroke);padding:3px 9px;border-radius:6px}
+@media(max-width:960px){.agents-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.agents-grid{grid-template-columns:1fr}}
+
+/* s4 */
+.s4-wrap{margin-top:56px;border:1px solid var(--stroke);border-radius:22px;padding:44px 40px;
+  background:linear-gradient(160deg,rgba(99,102,241,.08),rgba(5,6,15,.4) 55%,rgba(34,211,238,.06));backdrop-filter:blur(8px)}
+.siv{display:flex;align-items:stretch;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0 30px}
+.siv-node{flex:1;min-width:140px;text-align:center;padding:22px 12px;border-radius:16px;border:1px solid var(--stroke2);background:rgba(5,6,15,.5)}
+.siv-node .k{font-family:var(--font-h);font-size:26px;font-weight:700}
+.siv-node .t{font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:6px}
+.siv-node.goal{border-color:rgba(251,191,36,.5);box-shadow:0 0 24px rgba(251,191,36,.12)}
+.siv-node.goal .k{color:var(--amber)}
+.siv-node.v{border-color:rgba(52,211,153,.5);box-shadow:0 0 24px rgba(52,211,153,.12)}
+.siv-node.v .k{color:var(--green)}
+.siv-arr{align-self:center;color:var(--dim);font-size:17px;flex:none}
+.siv-loop{text-align:center;font-family:var(--font-m);font-size:12px;color:var(--rose);margin-bottom:34px}
+.s4-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.s4-col{border:1px solid var(--stroke);border-radius:14px;padding:22px;background:rgba(5,6,15,.4)}
+.s4-col h4{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.s4-col p{font-size:13.5px;color:var(--muted)}
+@media(max-width:820px){.s4-cols{grid-template-columns:1fr}.siv-arr{display:none}.siv-node{min-width:calc(50% - 5px)}}
+
+/* ---------- screenshots / cms ---------- */
+.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:44px 0 30px}
+.tab{padding:10px 22px;border-radius:12px;border:1px solid var(--stroke);background:rgba(255,255,255,.03);
+  color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-b);transition:.25s}
+.tab:hover{color:var(--txt)}
+.tab.active{background:rgba(99,102,241,.16);border-color:rgba(99,102,241,.55);color:#dfe2ff;box-shadow:0 0 20px rgba(99,102,241,.2)}
+.shot{display:none;animation:fadeUp .45s ease}
+.shot.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.browser{border:1px solid var(--stroke2);border-radius:16px;overflow:hidden;background:#080a18;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.8),0 0 60px rgba(99,102,241,.12)}
+.browser-bar{display:flex;align-items:center;gap:8px;padding:11px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--stroke)}
+.dot3{display:flex;gap:6px}
+.dot3 i{width:11px;height:11px;border-radius:50%;display:block}
+.dot3 i:nth-child(1){background:#fb7185}.dot3 i:nth-child(2){background:#fbbf24}.dot3 i:nth-child(3){background:#34d399}
+.url{flex:1;max-width:340px;margin:0 auto;background:rgba(255,255,255,.05);border-radius:8px;padding:4px 14px;
+  font-family:var(--font-m);font-size:11px;color:var(--dim);text-align:center}
+.cms{display:flex;min-height:430px}
+.cms-side{width:190px;flex:none;border-right:1px solid var(--stroke);padding:18px 12px;background:rgba(255,255,255,.015)}
+.cms-side .brand{display:flex;align-items:center;gap:8px;font-family:var(--font-h);font-weight:700;font-size:14px;padding:4px 10px 16px}
+.cms-side .brand svg{width:20px;height:20px}
+.snav{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--muted)}
+.snav a{padding:8px 12px;border-radius:9px;display:flex;gap:9px;align-items:center}
+.snav a.on{background:rgba(99,102,241,.16);color:#dfe2ff}
+.snav a:hover{background:rgba(255,255,255,.04)}
+.cms-main{flex:1;padding:22px 24px;overflow:hidden}
+.cms-h{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.cms-h h4{font-size:16px}
+.cms-h .crumb{font-family:var(--font-m);font-size:10.5px;color:var(--dim)}
+.cms-h .right{margin-left:auto;display:flex;gap:8px}
+.pill{font-family:var(--font-m);font-size:10px;padding:4px 10px;border-radius:99px;border:1px solid var(--stroke2);color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{border:1px solid var(--stroke);border-radius:12px;padding:13px 14px;background:rgba(255,255,255,.025)}
+.kpi .l{font-size:10.5px;color:var(--dim);font-family:var(--font-m);text-transform:uppercase;letter-spacing:.06em}
+.kpi .v{font-family:var(--font-h);font-size:21px;font-weight:700;margin-top:4px}
+.kpi .d{font-size:10.5px;margin-top:2px;font-family:var(--font-m)}
+.up{color:var(--green)}.dn{color:var(--rose)}.nt{color:var(--dim)}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-family:var(--font-m);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);text-align:left;padding:8px 10px;border-bottom:1px solid var(--stroke)}
+.tbl td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--muted)}
+.tbl td:first-child{color:var(--txt);font-weight:500}
+.tag{font-family:var(--font-m);font-size:9.5px;padding:3px 8px;border-radius:6px;border:1px solid}
+.tag.run{color:#a5b4fc;border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.1)}
+.tag.ok{color:var(--green);border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+.tag.warn{color:var(--amber);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tag.mig{color:var(--cyan);border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.08)}
+.bar{height:5px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--grad)}
+.split{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.panel{border:1px solid var(--stroke);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.02)}
+.panel .pt{font-family:var(--font-m);font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.bars{display:flex;align-items:flex-end;gap:7px;height:110px}
+.bars i{flex:1;border-radius:5px 5px 0 0;background:linear-gradient(180deg,#6366f1,#22d3ee);opacity:.85}
+.feed{display:flex;flex-direction:column;gap:9px;font-size:11px}
+.feed div{display:flex;gap:8px;align-items:flex-start;color:var(--muted)}
+.feed b{color:var(--txt);font-weight:600}
+.feed .t{font-family:var(--font-m);font-size:9.5px;color:var(--dim);flex:none;margin-top:1px}
+.arow{display:flex;align-items:center;gap:10px;padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
+.arow .aav{width:28px;height:28px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.3)}
+.arow .nm{color:var(--txt);font-weight:500;width:130px;flex:none}
+.arow .tk{font-family:var(--font-m);font-size:10px;color:var(--dim);margin-left:auto;flex:none}
+@media(max-width:880px){.cms-side{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}}
+
+/* transparency */
+.trans-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:52px}
+.trans{border:1px solid var(--stroke);border-radius:var(--radius);padding:26px 24px;background:var(--card);transition:.3s}
+.trans:hover{background:var(--card-hover);transform:translateY(-4px)}
+.trans .ic{font-size:26px}
+.trans h3{font-size:17px;margin:14px 0 8px}
+.trans p{font-size:13.5px;color:var(--muted)}
+@media(max-width:920px){.trans-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.trans-grid{grid-template-columns:1fr}}
+
+/* cta + footer */
+.cta-box{border:1px solid rgba(99,102,241,.4);border-radius:26px;padding:70px 40px;text-align:center;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse 70% 120% at 50% -20%,rgba(99,102,241,.28),transparent 60%),rgba(255,255,255,.02)}
+.cta-box h2{font-size:clamp(30px,4vw,48px);margin-bottom:16px}
+.cta-box p{color:var(--muted);max-width:560px;margin:0 auto 34px}
+footer{border-top:1px solid var(--stroke);padding:44px 0;color:var(--dim);font-size:13.5px}
+.foot{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.foot .logo{font-size:16px}.foot .logo-mark{width:24px;height:24px}
+.foot .links{margin-left:auto;display:flex;gap:22px}
+.foot .links a:hover{color:var(--txt)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<div class="bgfx">
+  <div class="grid"></div>
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+</div>
+
+<!-- logo svg symbol -->
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#6366f1"/><stop offset=".5" stop-color="#a855f7"/><stop offset="1" stop-color="#22d3ee"/>
+</linearGradient>
+<g id="mark">
+  <path d="M16 2 28 9v14l-12 7L4 23V9z" fill="none" stroke="url(#lg)" stroke-width="2.4" stroke-linejoin="round"/>
+  <circle cx="16" cy="16" r="4.2" fill="url(#lg)"/>
+  <path d="M16 7.5v4.5M16 20v4.5M9 12l4 2.3M23 12l-4 2.3M9 20l4-2.3M23 20l-4-2.3" stroke="url(#lg)" stroke-width="1.6" stroke-linecap="round"/>
+</g>
+</defs></svg>
+
+<nav>
+  <div class="nav-in">
+    <a href="#" class="logo"><svg class="logo-mark" viewBox="0 0 32 32"><use href="#mark"/></svg>digitori</a>
+    <div class="nav-links">
+      <a href="#how" data-en="How it works" data-vi="Cách hoạt động">How it works</a>
+      <a href="#agents" data-en="Digital Workers" data-vi="Digital Workers">Digital Workers</a>
+      <a href="#s4" data-en="S4 Philosophy" data-vi="Triết lý S4">S4 Philosophy</a>
+      <a href="#platform" data-en="Platform" data-vi="Nền tảng">Platform</a>
+      <a href="#tokenomics" data-en="Tokenomics" data-vi="Tokenomics">Tokenomics</a>
+      <a href="#integrations" data-en="Integrations" data-vi="Tích hợp">Integrations</a>
+    </div>
+    <div class="lang-sw">
+      <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" data-lang="vi" onclick="setLang('vi')">VI</button>
+    </div>
+    <a href="#cta" class="btn btn-primary btn-sm" data-en="Request Access" data-vi="Đăng ký dùng thử">Request Access</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge"><span class="dot"></span><span data-en="AaaS · Powered by S4 — Goal Driven Development" data-vi="AaaS · Vận hành trên S4 — Goal Driven Development">AaaS · Powered by S4 — Goal Driven Development</span></span>
+    <h1><span data-en="The Digital Factory that ships software" data-vi="Nhà máy số tự động xây phần mềm">The Digital Factory that ships software</span> <span class="grad-text" data-en="while you sleep" data-vi="khi bạn đang ngủ">while you sleep</span></h1>
+    <p class="sub" data-en="Digitori is an autonomous workforce of thousands of digital workers — BAs, Architects, Developers, Testers, DevOps — collaborating end-to-end to hit your product goal. You define the goal and grant access. The factory does the rest." data-vi="Digitori là lực lượng lao động tự vận hành với hàng nghìn digital worker — BA, Architect, Developer, Tester, DevOps — phối hợp trọn vòng đời để đạt mục tiêu sản phẩm của bạn. Bạn chỉ cần định nghĩa mục tiêu và cấp quyền truy cập. Nhà máy lo phần còn lại.">Digitori is an autonomous workforce of thousands of digital workers — BAs, Architects, Developers, Testers, DevOps — collaborating end-to-end to hit your product goal. You define the goal and grant access. The factory does the rest.</p>
+    <div class="cta-row">
+      <a href="#cta" class="btn btn-primary" data-en="Start a project →" data-vi="Bắt đầu dự án →">Start a project →</a>
+      <a href="#how" class="btn btn-ghost" data-en="See how it works" data-vi="Xem cách hoạt động">See how it works</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num grad-text">1,000+</div><div class="lbl" data-en="Digital workers on demand" data-vi="Digital worker theo yêu cầu">Digital workers on demand</div></div>
+      <div class="stat"><div class="num grad-text">100%</div><div class="lbl" data-en="Autonomous SIV loop" data-vi="Vòng lặp SIV tự động">Autonomous SIV loop</div></div>
+      <div class="stat"><div class="num grad-text">24/7</div><div class="lbl" data-en="Factory uptime" data-vi="Nhà máy vận hành">Factory uptime</div></div>
+      <div class="stat"><div class="num grad-text">1</div><div class="lbl" data-en="Human gate: goal approval" data-vi="Cổng duyệt duy nhất: mục tiêu">Human gate: goal approval</div></div>
+    </div>
+
+    <div class="pipeline rv">
+      <div class="pipe-head">
+        <span>digitori://factory/run — PRJ-042 · payment-service</span>
+        <span class="live" data-en="LIVE" data-vi="TRỰC TIẾP">LIVE</span>
+      </div>
+      <div class="pipe-flow">
+        <div class="pipe-node done"><div class="ic">🎯</div><div class="nm">Goal</div><div class="st" data-en="approved" data-vi="đã duyệt">approved</div></div>
+        <div class="pipe-arrow">─▶</div>
+        <div class="pipe-node done"><div class="ic">📋</div><div class="nm">Specs</div><div class="st">s4-analyst ✓</div></div>
+        <div class="pipe-arrow">─▶</div>
+        <div class="pipe-node done"><div class="ic">📐</div><div class="nm">Design</div><div class="st">s4-architect ✓</div></div>
+        <div class="pipe-arrow">─▶</div>
+        <div class="pipe-node act"><div class="ic">⚡</div><div class="nm">Implement</div><div class="st">TDD · 14/21 tasks</div></div>
+        <div class="pipe-arrow">─▶</div>
+        <div class="pipe-node"><div class="ic">🛡️</div><div class="nm">Verify</div><div class="st" data-en="vs. goal" data-vi="so với mục tiêu">vs. goal</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="strip" id="integrations">
+  <div class="wrap">
+    <div class="lbl" data-en="Grant access once — agents work across your entire stack via MCP" data-vi="Cấp quyền một lần — agents làm việc trên toàn bộ stack của bạn qua MCP">Grant access once — agents work across your entire stack via MCP</div>
+    <div class="chips">
+      <span class="chip"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-1.94c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.34.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.35.78 1.05.78 2.12v3.15c0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>GitHub</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="#2684FF"><path d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.7c0 2.4 1.96 4.35 4.34 4.36V2.84a.84.84 0 0 0-.84-.84h-9.63zM6.77 6.8a4.36 4.36 0 0 0 4.34 4.34h1.8v1.72a4.36 4.36 0 0 0 4.34 4.34V7.63a.84.84 0 0 0-.83-.83H6.77zM2 11.6c0 2.4 1.95 4.34 4.35 4.34h1.78v1.72c.01 2.39 1.95 4.34 4.34 4.34v-9.57a.84.84 0 0 0-.84-.84H2z"/></svg>Jira</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="#5E6AD2"><path d="M1.22 14.04 9.96 22.8c-4.4-.86-7.88-4.34-8.74-8.75zM1 11.1 12.9 23c.63-.05 1.25-.16 1.85-.32L1.32 9.25c-.16.6-.27 1.22-.32 1.85zm1.1-3.9L16.8 21.9c.47-.23.93-.5 1.36-.8L2.9 5.85c-.3.43-.57.89-.8 1.36zm2.1-2.94 15.55 15.55A11 11 0 1 0 4.2 4.26z"/></svg>Linear</span>
+      <span class="chip"><svg viewBox="0 0 24 24"><path fill="#F24E1E" d="M8 24a4 4 0 0 0 4-4v-4H8a4 4 0 0 0 0 8z"/><path fill="#A259FF" d="M4 12a4 4 0 0 1 4-4h4v8H8a4 4 0 0 1-4-4z"/><path fill="#FF7262" d="M4 4a4 4 0 0 1 4-4h4v8H8a4 4 0 0 1-4-4z"/><path fill="#1ABCFE" d="M12 0h4a4 4 0 0 1 0 8h-4z"/><path fill="#0ACF83" d="M20 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>Figma</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="#2684FF"><path d="M.87 18.26c-.25.4-.53.88-.76 1.25a.77.77 0 0 0 .26 1.05l4.87 3a.77.77 0 0 0 1.07-.26c.2-.33.46-.77.74-1.24 2-3.3 4.02-2.9 7.65-1.16l4.83 2.3a.77.77 0 0 0 1.03-.4l2.32-5.24a.77.77 0 0 0-.39-1.01c-1.02-.48-3.05-1.44-4.88-2.32-6.6-3.2-12.2-3-16.74 4.03zm22.26-12.5c.25-.41.53-.89.76-1.26a.77.77 0 0 0-.26-1.05l-4.87-3a.77.77 0 0 0-1.07.27c-.2.32-.46.76-.74 1.23-2 3.3-4.02 2.9-7.65 1.17L4.48.81a.77.77 0 0 0-1.03.4L1.13 6.45a.77.77 0 0 0 .39 1.02c1.02.48 3.05 1.43 4.88 2.31 6.6 3.2 12.2 3 16.73-4.02z"/></svg>Confluence</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.46 4.21 15.06 3.4c1.3-.11 1.63-.04 2.45.56l3.38 2.38c.56.41.74.52.74 1v13.1c0 .86-.31 1.37-1.4 1.44l-12.3.75c-.83.04-1.22-.08-1.65-.63L3.79 18.4c-.47-.63-.67-1.1-.67-1.65V5.58c0-.7.31-1.29 1.34-1.37zm11.06 2.13-8.9.66v10.9c0 .5.16.7.66.67l9.09-.53c.5-.03.61-.31.61-.72V7.5c0-.4-.16-.62-.5-.6l-.96-.06zM7.8 8.77c.04.35.28.35.9.31l6.4-.4V7.6l-6.7.5c-.5.05-.64.31-.6.67zm.7 2.13v6.06c0 .35.19.48.6.44l6.6-.4c.4-.03.45-.26.45-.55v-6.02c0-.28-.11-.44-.35-.42l-6.9.42c-.28.02-.4.16-.4.47z"/></svg>Notion</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="#6264A7"><path d="M20.63 8.15h-4.9a1.6 1.6 0 0 0 .06-.44V4.5c0-.28-.23-.5-.5-.5h-4.13c.44-.6 1.15-1 1.96-1a2.42 2.42 0 0 1 2.42 2.42h1.13A3.55 3.55 0 0 0 13.12 2a3.55 3.55 0 0 0-3.3 2.27H8.5c-.28 0-.5.22-.5.5v3.21c0 .16.02.3.06.44H2.37c-.76 0-1.37.61-1.37 1.37v6.42C1 19.55 3.45 22 6.79 22c2.42 0 4.4-1.3 5.21-3.24.86 1.51 2.48 2.53 4.34 2.53A5.02 5.02 0 0 0 21.36 16.27l.01-6.75c0-.76-.61-1.37-1.37-1.37z"/></svg>Teams</span>
+      <span class="chip"><svg viewBox="0 0 24 24"><path fill="#E01E5A" d="M5.04 15.12a2.53 2.53 0 1 1-2.52-2.53h2.52zm1.27 0a2.53 2.53 0 0 1 5.05 0v6.32a2.53 2.53 0 1 1-5.05 0z"/><path fill="#36C5F0" d="M8.83 5.04a2.53 2.53 0 1 1 2.53-2.52v2.52zm0 1.27a2.53 2.53 0 0 1 0 5.05H2.5a2.53 2.53 0 1 1 0-5.05z"/><path fill="#2EB67D" d="M18.96 8.83a2.53 2.53 0 1 1 2.52 2.53h-2.52zm-1.27 0a2.53 2.53 0 0 1-5.05 0V2.5a2.53 2.53 0 1 1 5.05 0z"/><path fill="#ECB22E" d="M15.17 18.96a2.53 2.53 0 1 1-2.53 2.52v-2.52zm0-1.27a2.53 2.53 0 0 1 0-5.05h6.33a2.53 2.53 0 1 1 0 5.05z"/></svg>Slack</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="#FF9900"><path d="M6.76 10.36c0 .3.03.55.09.73.06.18.15.38.27.6.04.06.06.13.06.18 0 .08-.05.16-.15.24l-.5.33a.38.38 0 0 1-.21.07c-.08 0-.16-.04-.24-.11a2.5 2.5 0 0 1-.29-.38 6.24 6.24 0 0 1-.25-.47c-.62.73-1.4 1.1-2.34 1.1-.67 0-1.2-.19-1.59-.57-.39-.38-.59-.89-.59-1.53 0-.68.24-1.22.73-1.64.49-.42 1.14-.63 1.96-.63.27 0 .55.02.85.06.3.05.6.11.92.19v-.62c0-.65-.13-1.1-.4-1.36-.27-.26-.73-.4-1.38-.4-.3 0-.6.04-.92.11-.31.07-.62.17-.91.28a2.4 2.4 0 0 1-.3.11.52.52 0 0 1-.13.03c-.12 0-.18-.09-.18-.27v-.42c0-.14.02-.25.06-.31a.66.66 0 0 1 .25-.19c.3-.15.65-.28 1.06-.38.41-.11.85-.16 1.31-.16 1 0 1.73.23 2.2.68.46.45.7 1.14.7 2.06v2.71zM3.53 11.6c.26 0 .53-.05.82-.14.28-.1.53-.27.75-.51.13-.15.22-.32.27-.51.05-.19.08-.42.08-.69v-.33a6.66 6.66 0 0 0-1.47-.18c-.52 0-.9.1-1.16.31-.26.21-.38.5-.38.89 0 .36.09.63.28.81.18.19.45.28.81.28zm6.4.9c-.15 0-.25-.03-.32-.08-.07-.05-.13-.17-.18-.33L7.55 5.55a1.5 1.5 0 0 1-.08-.34c0-.13.07-.21.2-.21h.83c.16 0 .27.03.33.08.07.05.12.17.17.33l1.34 5.28 1.24-5.28c.04-.17.09-.28.16-.33a.6.6 0 0 1 .34-.08h.68c.16 0 .27.03.34.08.07.05.13.17.16.33l1.26 5.35 1.38-5.35c.05-.17.11-.28.17-.33.07-.05.18-.08.33-.08h.79c.13 0 .21.07.21.21l-.03.13-.06.21-1.92 6.17c-.05.17-.11.28-.18.33-.07.05-.18.08-.32.08h-.73c-.16 0-.27-.03-.34-.09-.07-.06-.13-.17-.16-.34l-1.23-5.11-1.22 5.1c-.04.17-.09.29-.16.35-.07.06-.19.09-.34.09zm10.23.22c-.44 0-.87-.05-1.29-.15-.42-.1-.74-.21-.96-.34-.13-.07-.22-.16-.26-.23a.6.6 0 0 1-.05-.23v-.44c0-.18.07-.27.2-.27a.47.47 0 0 1 .15.03l.21.09c.29.13.6.23.93.3.34.07.67.1 1 .1.53 0 .95-.09 1.24-.28.29-.19.44-.46.44-.81 0-.24-.08-.44-.23-.6-.15-.16-.44-.3-.86-.44l-1.24-.39c-.62-.2-1.08-.49-1.36-.87a2.02 2.02 0 0 1-.43-1.24c0-.36.08-.68.23-.95.15-.28.36-.52.62-.71.26-.2.55-.34.9-.44.34-.1.7-.15 1.08-.15.19 0 .38.01.57.04l.55.09.47.14c.15.05.26.1.34.15a.7.7 0 0 1 .25.2.45.45 0 0 1 .07.27v.4c0 .18-.07.28-.2.28a.9.9 0 0 1-.33-.11 4 4 0 0 0-1.68-.34c-.48 0-.86.08-1.13.24-.26.16-.4.41-.4.76 0 .24.09.45.26.61.17.16.48.32.94.47l1.21.39c.61.2 1.06.47 1.32.82.27.35.4.75.4 1.2 0 .37-.08.7-.22 1-.15.29-.36.55-.62.75-.27.21-.59.37-.96.48-.39.11-.8.17-1.24.17z"/><path fill="#FF9900" d="M21.7 16.98C19.08 18.92 15.26 19.95 12 19.95c-4.6 0-8.74-1.7-11.87-4.53-.25-.22-.03-.53.27-.36 3.38 1.97 7.56 3.15 11.88 3.15 2.91 0 6.12-.6 9.06-1.86.45-.19.82.3.36.63z"/><path fill="#FF9900" d="M22.79 15.73c-.34-.43-2.22-.2-3.07-.1-.26.03-.3-.2-.06-.36 1.5-1.06 3.96-.75 4.25-.4.29.36-.08 2.83-1.49 4.01-.22.18-.42.09-.33-.15.32-.79 1.03-2.57.7-3z"/></svg>AWS</span>
+      <span class="chip mono" style="font-size:11px" data-en="+ any MCP server" data-vi="+ mọi MCP server">+ any MCP server</span>
+    </div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap center">
+    <div class="sec-tag" data-en="How it works" data-vi="Cách hoạt động">How it works</div>
+    <h2 class="sec-title"><span data-en="You bring the goal." data-vi="Bạn mang mục tiêu đến.">You bring the goal.</span> <span class="grad-text" data-en="We bring the factory." data-vi="Chúng tôi mang cả nhà máy.">We bring the factory.</span></h2>
+    <p class="sec-sub" data-en="No hiring, no standups, no micromanagement. Three steps between your idea and verified, production-ready output." data-vi="Không tuyển dụng, không họp hành, không quản lý vi mô. Chỉ ba bước từ ý tưởng đến sản phẩm được xác minh, sẵn sàng production.">No hiring, no standups, no micromanagement. Three steps between your idea and verified, production-ready output.</p>
+    <div class="steps" style="text-align:left">
+      <div class="step rv">
+        <div class="n">01</div>
+        <h3 data-en="Define your project" data-vi="Định nghĩa dự án">Define your project</h3>
+        <p data-en="Tell Digitori what you want to achieve and what kind of project it is. The goal — with measurable success criteria — is the only thing you need to approve." data-vi="Cho Digitori biết bạn muốn đạt được gì và loại dự án của bạn. Mục tiêu — kèm tiêu chí thành công đo lường được — là thứ duy nhất bạn cần phê duyệt.">Tell Digitori what you want to achieve and what kind of project it is. The goal — with measurable success criteria — is the only thing you need to approve.</p>
+        <div class="type-chips">
+          <span class="tchip g">🌱 Greenfield</span>
+          <span class="tchip b">🏗️ Brownfield</span>
+          <span class="tchip m">🔁 Migration</span>
+        </div>
+      </div>
+      <div class="step rv">
+        <div class="n">02</div>
+        <h3 data-en="Grant MCP access" data-vi="Cấp quyền MCP">Grant MCP access</h3>
+        <p data-en="Connect the tools your team already uses — GitHub, Jira, Linear, Figma, Confluence, Notion, Teams, Slack, AWS. Agents operate inside your stack with scoped, auditable permissions." data-vi="Kết nối các công cụ đội bạn đang dùng — GitHub, Jira, Linear, Figma, Confluence, Notion, Teams, Slack, AWS. Agents làm việc ngay trong stack của bạn với quyền hạn được giới hạn và kiểm toán đầy đủ.">Connect the tools your team already uses — GitHub, Jira, Linear, Figma, Confluence, Notion, Teams, Slack, AWS. Agents operate inside your stack with scoped, auditable permissions.</p>
+        <div class="type-chips">
+          <span class="tchip m mono">OAuth scoped</span>
+          <span class="tchip g mono">Audit log</span>
+        </div>
+      </div>
+      <div class="step rv">
+        <div class="n">03</div>
+        <h3 data-en="Track what matters" data-vi="Theo dõi điều quan trọng">Track what matters</h3>
+        <p data-en="Watch estimation (cost & tokens), real-time progress, and SLA compliance from one dashboard — then receive output verified against your goal, not just the spec." data-vi="Theo dõi estimation (chi phí & token), tiến độ thời gian thực và SLA trên một dashboard duy nhất — rồi nhận output được xác minh so với mục tiêu, không chỉ so với spec.">Watch estimation (cost & tokens), real-time progress, and SLA compliance from one dashboard — then receive output verified against your goal, not just the spec.</p>
+        <div class="type-chips">
+          <span class="tchip b mono">$ / tokens</span>
+          <span class="tchip m mono">Progress</span>
+          <span class="tchip g mono">SLA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="agents" style="padding-top:20px">
+  <div class="wrap center">
+    <div class="sec-tag" data-en="The workforce" data-vi="Lực lượng lao động">The workforce</div>
+    <h2 class="sec-title"><span data-en="Thousands of digital workers," data-vi="Hàng nghìn digital worker,">Thousands of digital workers,</span> <span class="grad-text" data-en="six specialized roles" data-vi="sáu vai trò chuyên biệt">six specialized roles</span></h2>
+    <p class="sec-sub" data-en="Workers spin up in parallel and scale with your project — dozens on a feature, thousands on a migration. Each role owns one part of the lifecycle; the Orchestrator routes work, logs assumptions, and escalates only on hard stops." data-vi="Digital worker được khởi tạo song song và co giãn theo dự án — vài chục cho một tính năng, hàng nghìn cho một cuộc migration. Mỗi vai trò sở hữu một phần vòng đời; Orchestrator điều phối công việc, ghi log giả định và chỉ báo lên khi gặp điểm dừng cứng.">Workers spin up in parallel and scale with your project — dozens on a feature, thousands on a migration. Each role owns one part of the lifecycle; the Orchestrator routes work, logs assumptions, and escalates only on hard stops.</p>
+    <div class="agents-grid" style="text-align:left">
+      <div class="agent rv" style="--ac:#a855f7">
+        <div class="av">🧠</div>
+        <h3>Orchestrator</h3>
+        <div class="role" data-en="Pipeline driver" data-vi="Điều phối pipeline">Pipeline driver</div>
+        <p data-en="Drives the entire SIV loop autonomously. Resolves unknowns with logged [ASSUMED] decisions instead of questions. Escalates only on hard stops." data-vi="Vận hành toàn bộ vòng lặp SIV tự động. Xử lý điểm mờ bằng quyết định [ASSUMED] có ghi log thay vì hỏi lại. Chỉ báo lên khi gặp điểm dừng cứng.">Drives the entire SIV loop autonomously. Resolves unknowns with logged [ASSUMED] decisions instead of questions. Escalates only on hard stops.</p>
+        <div class="tools"><span>run-log</span><span>routing</span><span>safety rails</span></div>
+      </div>
+      <div class="agent rv" style="--ac:#22d3ee">
+        <div class="av">📊</div>
+        <h3>Business Analyst</h3>
+        <div class="role" data-en="Goal & specs" data-vi="Mục tiêu & specs">Goal &amp; specs</div>
+        <p data-en="Shapes your idea into a measurable goal, derives requirements and scenarios, and closes spec gaps through structured clarification." data-vi="Chuyển ý tưởng của bạn thành mục tiêu đo lường được, suy ra yêu cầu và kịch bản, đóng các khoảng trống spec bằng clarify có cấu trúc.">Shapes your idea into a measurable goal, derives requirements and scenarios, and closes spec gaps through structured clarification.</p>
+        <div class="tools"><span>Jira</span><span>Confluence</span><span>Notion</span></div>
+      </div>
+      <div class="agent rv" style="--ac:#6366f1">
+        <div class="av">📐</div>
+        <h3>Solution Architect</h3>
+        <div class="role" data-en="Technical design" data-vi="Thiết kế kỹ thuật">Technical design</div>
+        <p data-en="Owns architecture, stack selection, data models and trade-off analysis — checked against your project constitution on every phase." data-vi="Chịu trách nhiệm kiến trúc, lựa chọn stack, data model và phân tích trade-off — đối chiếu với constitution của dự án ở mọi phase.">Owns architecture, stack selection, data models and trade-off analysis — checked against your project constitution on every phase.</p>
+        <div class="tools"><span>Figma</span><span>AWS</span><span>diagrams</span></div>
+      </div>
+      <div class="agent rv" style="--ac:#34d399">
+        <div class="av">⚡</div>
+        <h3>Developer</h3>
+        <div class="role" data-en="Implementation" data-vi="Triển khai">Implementation</div>
+        <p data-en="Executes TDD-ordered tasks — one subagent per task, red-green-refactor, small verifiable commits pushed straight to your repo." data-vi="Thực thi task theo thứ tự TDD — mỗi task một subagent, red-green-refactor, commit nhỏ có thể kiểm chứng đẩy thẳng vào repo của bạn.">Executes TDD-ordered tasks — one subagent per task, red-green-refactor, small verifiable commits pushed straight to your repo.</p>
+        <div class="tools"><span>GitHub</span><span>Linear</span><span>TDD</span></div>
+      </div>
+      <div class="agent rv" style="--ac:#fbbf24">
+        <div class="av">🔍</div>
+        <h3>Tester / Reviewer</h3>
+        <div class="role" data-en="Two-stage review" data-vi="Review hai tầng">Two-stage review</div>
+        <p data-en="Reviews every change twice: spec compliance first, then code quality. Runs adversarial verification against the goal's success criteria." data-vi="Review mỗi thay đổi hai lần: tuân thủ spec trước, chất lượng code sau. Chạy verify đối kháng so với tiêu chí thành công của mục tiêu.">Reviews every change twice: spec compliance first, then code quality. Runs adversarial verification against the goal's success criteria.</p>
+        <div class="tools"><span>CI</span><span>e2e</span><span>coverage</span></div>
+      </div>
+      <div class="agent rv" style="--ac:#fb7185">
+        <div class="av">🚀</div>
+        <h3>DevOps</h3>
+        <div class="role" data-en="Ship & operate" data-vi="Triển khai & vận hành">Ship &amp; operate</div>
+        <p data-en="Provisions infrastructure, wires CI/CD, deploys to your cloud and keeps environments healthy — with rollback as a first-class citizen." data-vi="Dựng hạ tầng, thiết lập CI/CD, deploy lên cloud của bạn và giữ môi trường ổn định — rollback luôn là công dân hạng nhất.">Provisions infrastructure, wires CI/CD, deploys to your cloud and keeps environments healthy — with rollback as a first-class citizen.</p>
+        <div class="tools"><span>AWS</span><span>Actions</span><span>IaC</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="s4" style="padding-top:20px">
+  <div class="wrap">
+    <div class="center">
+      <div class="sec-tag" data-en="The philosophy" data-vi="Triết lý">The philosophy</div>
+      <h2 class="sec-title"><span data-en="Built on" data-vi="Xây trên nền">Built on</span> <span class="grad-text">S4 — Goal Driven Development</span></h2>
+      <p class="sec-sub" data-en="A code agent ships code. A product agent ships outcomes. Every Digitori run starts from a measurable product goal, flows through the SIV loop, and is only complete when verification proves the goal was met — not just that the code compiles." data-vi="Code agent tạo ra code. Product agent tạo ra kết quả. Mỗi lượt chạy của Digitori bắt đầu từ một mục tiêu sản phẩm đo lường được, đi qua vòng lặp SIV, và chỉ hoàn tất khi verify chứng minh mục tiêu đã đạt — không chỉ là code chạy được.">A code agent ships code. A product agent ships outcomes. Every Digitori run starts from a measurable product goal, flows through the SIV loop, and is only complete when verification proves the goal was met — not just that the code compiles.</p>
+    </div>
+    <div class="s4-wrap rv">
+      <div class="siv">
+        <div class="siv-node goal"><div class="k">GOAL</div><div class="t" data-en="what & why · measurable" data-vi="cái gì & tại sao · đo được">what &amp; why · measurable</div></div>
+        <div class="siv-arr">──▶</div>
+        <div class="siv-node"><div class="k">S</div><div class="t">Specs</div></div>
+        <div class="siv-arr">──▶</div>
+        <div class="siv-node"><div class="k">I</div><div class="t">Implement · TDD</div></div>
+        <div class="siv-arr">──▶</div>
+        <div class="siv-node v"><div class="k">V</div><div class="t" data-en="Verify vs. the GOAL" data-vi="Verify so với GOAL">Verify vs. the GOAL</div></div>
+        <div class="siv-arr">──▶</div>
+        <div class="siv-node"><div class="k">📦</div><div class="t">Archive</div></div>
+      </div>
+      <div class="siv-loop" data-en="◀── gaps found? loop back until the goal is verified ──" data-vi="◀── phát hiện thiếu sót? lặp lại đến khi mục tiêu được xác minh ──">◀── gaps found? loop back until the goal is verified ──</div>
+      <div class="s4-cols">
+        <div class="s4-col">
+          <h4>🎯 <span data-en="One human gate" data-vi="Một cổng duyệt duy nhất">One human gate</span></h4>
+          <p data-en="Goal approval is the only mandatory human decision. After that, autopilot resolves unknowns with logged assumptions — every decision lands in the run-log for review." data-vi="Phê duyệt mục tiêu là quyết định con người duy nhất bắt buộc. Sau đó, autopilot tự xử lý điểm mờ bằng giả định có ghi log — mọi quyết định đều nằm trong run-log để xem lại.">Goal approval is the only mandatory human decision. After that, autopilot resolves unknowns with logged assumptions — every decision lands in the run-log for review.</p>
+        </div>
+        <div class="s4-col">
+          <h4>📏 <span data-en="Scale-adaptive depth" data-vi="Độ sâu thích ứng quy mô">Scale-adaptive depth</span></h4>
+          <p data-en="S for patches, M for features, L for systems — ceremony adjusts to the size of the change. But the Verify phase is never skipped. That is the point." data-vi="S cho bản vá, M cho tính năng, L cho hệ thống — mức độ quy trình tự điều chỉnh theo độ lớn thay đổi. Nhưng phase Verify không bao giờ bị bỏ qua. Đó chính là điểm cốt lõi.">S for patches, M for features, L for systems — ceremony adjusts to the size of the change. But the Verify phase is never skipped. That is the point.</p>
+        </div>
+        <div class="s4-col">
+          <h4>🛡️ <span data-en="Verified outcomes" data-vi="Kết quả được xác minh">Verified outcomes</span></h4>
+          <p data-en="A spec can be perfectly implemented and still fail the reason you wrote it. Digitori's verifier is adversarial: it proves the outcome happened, or the loop continues." data-vi="Một spec có thể được triển khai hoàn hảo mà vẫn trượt mục đích bạn viết ra nó. Verifier của Digitori mang tính đối kháng: chứng minh kết quả đã xảy ra, nếu không vòng lặp tiếp tục.">A spec can be perfectly implemented and still fail the reason you wrote it. Digitori's verifier is adversarial: it proves the outcome happened, or the loop continues.</p>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:30px">
+        <a class="btn btn-ghost btn-sm" href="https://github.com/nguyenvietvu/s4" target="_blank" rel="noopener">⭐ github.com/nguyenvietvu/s4</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="platform" style="padding-top:20px">
+  <div class="wrap center">
+    <div class="sec-tag" data-en="The platform" data-vi="Nền tảng">The platform</div>
+    <h2 class="sec-title"><span data-en="One console." data-vi="Một console duy nhất.">One console.</span> <span class="grad-text" data-en="Total visibility." data-vi="Nhìn thấu mọi thứ.">Total visibility.</span></h2>
+    <p class="sec-sub" data-en="Everything a client needs to trust an autonomous factory: projects, agents, spend and SLA — live." data-vi="Mọi thứ client cần để tin tưởng một nhà máy tự động: dự án, agents, chi phí và SLA — theo thời gian thực.">Everything a client needs to trust an autonomous factory: projects, agents, spend and SLA — live.</p>
+
+    <div class="tabs">
+      <button class="tab active" data-shot="s-proj" data-en="📁 Projects" data-vi="📁 Dự án">📁 Projects</button>
+      <button class="tab" data-shot="s-agents">🤖 Workers</button>
+      <button class="tab" data-shot="s-cost" data-en="💰 Cost & Tokens" data-vi="💰 Chi phí & Token">💰 Cost &amp; Tokens</button>
+      <button class="tab" data-shot="s-sla" data-en="📈 SLA & Output" data-vi="📈 SLA & Output">📈 SLA &amp; Output</button>
+    </div>
+
+    <!-- ============ SHOT 1 : PROJECTS ============ -->
+    <div class="shot active" id="s-proj" style="text-align:left">
+      <div class="browser rv">
+        <div class="browser-bar"><div class="dot3"><i></i><i></i><i></i></div><div class="url">app.digitori.ai/projects</div><div style="width:47px"></div></div>
+        <div class="cms">
+          <aside class="cms-side">
+            <div class="brand"><svg viewBox="0 0 32 32"><use href="#mark"/></svg>digitori</div>
+            <div class="snav">
+              <a class="on">📁 <span data-en="Projects" data-vi="Dự án">Projects</span></a>
+              <a>🤖 Workers</a>
+              <a>💰 <span data-en="Cost" data-vi="Chi phí">Cost</span></a>
+              <a>📈 SLA</a>
+              <a>🔌 <span data-en="Integrations" data-vi="Tích hợp">Integrations</span></a>
+              <a>⚙️ <span data-en="Settings" data-vi="Cài đặt">Settings</span></a>
+            </div>
+          </aside>
+          <div class="cms-main">
+            <div class="cms-h">
+              <h4 data-en="Projects" data-vi="Dự án">Projects</h4><span class="crumb">/ overview</span>
+              <div class="right"><span class="pill">Q3 2026</span><span class="pill" style="color:#a5b4fc;border-color:rgba(99,102,241,.5)">+ <span data-en="New project" data-vi="Dự án mới">New project</span></span></div>
+            </div>
+            <div class="kpis">
+              <div class="kpi"><div class="l" data-en="Active projects" data-vi="Dự án đang chạy">Active projects</div><div class="v">8</div><div class="d up">▲ 2 <span data-en="this month" data-vi="tháng này">this month</span></div></div>
+              <div class="kpi"><div class="l" data-en="Goals verified" data-vi="Mục tiêu đã xác minh">Goals verified</div><div class="v">142</div><div class="d up">▲ 12%</div></div>
+              <div class="kpi"><div class="l" data-en="Avg. SIV cycle" data-vi="Chu kỳ SIV TB">Avg. SIV cycle</div><div class="v">3.2d</div><div class="d up">▼ 0.8d</div></div>
+              <div class="kpi"><div class="l" data-en="On SLA" data-vi="Đạt SLA">On SLA</div><div class="v" style="color:var(--green)">99.2%</div><div class="d nt">SLA ≥ 98%</div></div>
+            </div>
+            <table class="tbl">
+              <thead><tr><th data-en="Project" data-vi="Dự án">Project</th><th data-en="Type" data-vi="Loại">Type</th><th>Phase</th><th data-en="Progress" data-vi="Tiến độ">Progress</th><th data-en="Est. cost" data-vi="Chi phí ước tính">Est. cost</th><th>ETA</th></tr></thead>
+              <tbody>
+                <tr><td>payment-service</td><td><span class="tag ok">green</span></td><td><span class="tag run">I · Implement</span></td><td><div class="bar"><i style="width:67%"></i></div></td><td class="mono">$1,240 / $1,900</td><td class="mono">Aug 09</td></tr>
+                <tr><td>legacy-erp-revamp</td><td><span class="tag warn">brown</span></td><td><span class="tag run">S · Specs</span></td><td><div class="bar"><i style="width:22%"></i></div></td><td class="mono">$310 / $4,200</td><td class="mono">Sep 14</td></tr>
+                <tr><td>on-prem → AWS</td><td><span class="tag mig">migrate</span></td><td><span class="tag ok">V · Verify</span></td><td><div class="bar"><i style="width:91%"></i></div></td><td class="mono">$2,880 / $3,100</td><td class="mono">Aug 05</td></tr>
+                <tr><td>mobile-app-v2</td><td><span class="tag ok">green</span></td><td><span class="tag run">I · Implement</span></td><td><div class="bar"><i style="width:48%"></i></div></td><td class="mono">$960 / $2,400</td><td class="mono">Aug 21</td></tr>
+                <tr><td>data-warehouse</td><td><span class="tag mig">migrate</span></td><td><span class="tag ok">📦 Archived</span></td><td><div class="bar"><i style="width:100%"></i></div></td><td class="mono">$5,110 / $5,300</td><td class="mono up">✓ <span data-en="delivered" data-vi="đã bàn giao">delivered</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SHOT 2 : AGENTS ============ -->
+    <div class="shot" id="s-agents" style="text-align:left">
+      <div class="browser">
+        <div class="browser-bar"><div class="dot3"><i></i><i></i><i></i></div><div class="url">app.digitori.ai/agents</div><div style="width:47px"></div></div>
+        <div class="cms">
+          <aside class="cms-side">
+            <div class="brand"><svg viewBox="0 0 32 32"><use href="#mark"/></svg>digitori</div>
+            <div class="snav">
+              <a>📁 <span data-en="Projects" data-vi="Dự án">Projects</span></a>
+              <a class="on">🤖 Workers</a>
+              <a>💰 <span data-en="Cost" data-vi="Chi phí">Cost</span></a>
+              <a>📈 SLA</a>
+              <a>🔌 <span data-en="Integrations" data-vi="Tích hợp">Integrations</span></a>
+              <a>⚙️ <span data-en="Settings" data-vi="Cài đặt">Settings</span></a>
+            </div>
+          </aside>
+          <div class="cms-main">
+            <div class="cms-h">
+              <h4 data-en="Worker fleet" data-vi="Đội ngũ worker">Worker fleet</h4><span class="crumb">/ live</span>
+              <div class="right"><span class="pill" style="color:var(--green);border-color:rgba(52,211,153,.4)">● 1,248 <span data-en="workers online" data-vi="worker trực tuyến">workers online</span></span></div>
+            </div>
+            <div class="split">
+              <div class="panel">
+                <div class="pt" data-en="Active workers — PRJ-042 payment-service · 46 spawned" data-vi="Worker đang hoạt động — PRJ-042 payment-service · 46 đã khởi tạo">Active workers — PRJ-042 payment-service · 46 spawned</div>
+                <div class="arow"><div class="aav">🧠</div><div class="nm">Orchestrator</div><span class="tag run" data-en="routing" data-vi="điều phối">routing</span><span class="tk">run-log: 214 <span data-en="decisions" data-vi="quyết định">decisions</span></span></div>
+                <div class="arow"><div class="aav">⚡</div><div class="nm">dev-worker-03</div><span class="tag run">task 15/21 · TDD</span><span class="tk">128k tok/h</span></div>
+                <div class="arow"><div class="aav">⚡</div><div class="nm">dev-worker-04</div><span class="tag run">task 16/21 · TDD</span><span class="tk">96k tok/h</span></div>
+                <div class="arow"><div class="aav">🔍</div><div class="nm">reviewer-01</div><span class="tag warn">stage 2 · quality</span><span class="tk">PR #218</span></div>
+                <div class="arow"><div class="aav">🛡️</div><div class="nm">verifier-01</div><span class="tag ok" data-en="queued" data-vi="chờ lượt">queued</span><span class="tk" data-en="vs. goal criteria" data-vi="so với tiêu chí goal">vs. goal criteria</span></div>
+                <div class="arow" style="border:none"><div class="aav">🚀</div><div class="nm">devops-01</div><span class="tag ok">staging ✓</span><span class="tk">eu-west-1</span></div>
+              </div>
+              <div class="panel">
+                <div class="pt" data-en="Live activity" data-vi="Hoạt động trực tiếp">Live activity</div>
+                <div class="feed">
+                  <div><span class="t">14:02</span><span><b>dev-03</b> <span data-en="pushed" data-vi="đã push"> pushed</span> <b class="mono" style="font-size:10px">feat: idempotent refunds</b> → GitHub</span></div>
+                  <div><span class="t">14:01</span><span><b>reviewer-01</b> <span data-en="approved spec compliance on PR #217" data-vi="duyệt tuân thủ spec cho PR #217">approved spec compliance on PR #217</span></span></div>
+                  <div><span class="t">13:58</span><span><b>orchestrator</b> [ASSUMED] <span data-en="retry policy = exp. backoff, logged" data-vi="retry policy = exp. backoff, đã ghi log">retry policy = exp. backoff, logged</span></span></div>
+                  <div><span class="t">13:55</span><span><b>ba-01</b> <span data-en="synced acceptance scenarios to" data-vi="đồng bộ kịch bản nghiệm thu sang">synced acceptance scenarios to</span> Jira</span></div>
+                  <div><span class="t">13:51</span><span><b>devops-01</b> <span data-en="green deploy to staging · smoke ✓" data-vi="deploy staging thành công · smoke ✓">green deploy to staging · smoke ✓</span></span></div>
+                  <div><span class="t">13:47</span><span><b>verifier-01</b> <span data-en="posted verify report v3 to Slack" data-vi="gửi báo cáo verify v3 lên Slack">posted verify report v3 to Slack</span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SHOT 3 : COST ============ -->
+    <div class="shot" id="s-cost" style="text-align:left">
+      <div class="browser">
+        <div class="browser-bar"><div class="dot3"><i></i><i></i><i></i></div><div class="url">app.digitori.ai/cost</div><div style="width:47px"></div></div>
+        <div class="cms">
+          <aside class="cms-side">
+            <div class="brand"><svg viewBox="0 0 32 32"><use href="#mark"/></svg>digitori</div>
+            <div class="snav">
+              <a>📁 <span data-en="Projects" data-vi="Dự án">Projects</span></a>
+              <a>🤖 Workers</a>
+              <a class="on">💰 <span data-en="Cost" data-vi="Chi phí">Cost</span></a>
+              <a>📈 SLA</a>
+              <a>🔌 <span data-en="Integrations" data-vi="Tích hợp">Integrations</span></a>
+              <a>⚙️ <span data-en="Settings" data-vi="Cài đặt">Settings</span></a>
+            </div>
+          </aside>
+          <div class="cms-main">
+            <div class="cms-h">
+              <h4 data-en="Cost & token estimation" data-vi="Ước tính chi phí & token">Cost &amp; token estimation</h4><span class="crumb">/ PRJ-042</span>
+              <div class="right"><span class="pill" data-en="Budget cap: $1,900" data-vi="Trần ngân sách: $1,900">Budget cap: $1,900</span></div>
+            </div>
+            <div class="kpis">
+              <div class="kpi"><div class="l" data-en="Spend to date" data-vi="Đã chi">Spend to date</div><div class="v">$1,240</div><div class="d nt">65% <span data-en="of budget" data-vi="ngân sách">of budget</span></div></div>
+              <div class="kpi"><div class="l">Tokens</div><div class="v">38.4M</div><div class="d nt">in 31.1M · out 7.3M</div></div>
+              <div class="kpi"><div class="l" data-en="Forecast at done" data-vi="Dự báo khi xong">Forecast at done</div><div class="v">$1,780</div><div class="d up">▼ $120 <span data-en="under cap" data-vi="dưới trần">under cap</span></div></div>
+              <div class="kpi"><div class="l" data-en="vs. human team" data-vi="so với đội người">vs. human team</div><div class="v" style="color:var(--green)">−94%</div><div class="d nt" data-en="est. $31k equivalent" data-vi="ước tính tương đương $31k">est. $31k equivalent</div></div>
+            </div>
+            <div class="split">
+              <div class="panel">
+                <div class="pt" data-en="Daily spend — last 14 days ($)" data-vi="Chi tiêu theo ngày — 14 ngày qua ($)">Daily spend — last 14 days ($)</div>
+                <div class="bars">
+                  <i style="height:34%"></i><i style="height:48%"></i><i style="height:41%"></i><i style="height:62%"></i><i style="height:55%"></i><i style="height:30%"></i><i style="height:26%"></i><i style="height:70%"></i><i style="height:83%"></i><i style="height:66%"></i><i style="height:91%"></i><i style="height:74%"></i><i style="height:58%"></i><i style="height:44%"></i>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="pt" data-en="Spend by agent" data-vi="Chi tiêu theo agent">Spend by agent</div>
+                <div class="feed" style="gap:11px">
+                  <div><span style="flex:1">⚡ Developer ×2</span><div class="bar" style="width:90px;margin-top:6px"><i style="width:74%"></i></div><span class="t" style="margin-top:2px">$918</span></div>
+                  <div><span style="flex:1">🔍 Tester/Reviewer</span><div class="bar" style="width:90px;margin-top:6px"><i style="width:22%"></i></div><span class="t" style="margin-top:2px">$164</span></div>
+                  <div><span style="flex:1">📐 Architect</span><div class="bar" style="width:90px;margin-top:6px"><i style="width:12%"></i></div><span class="t" style="margin-top:2px">$88</span></div>
+                  <div><span style="flex:1">📊 BA</span><div class="bar" style="width:90px;margin-top:6px"><i style="width:7%"></i></div><span class="t" style="margin-top:2px">$46</span></div>
+                  <div><span style="flex:1">🚀 DevOps</span><div class="bar" style="width:90px;margin-top:6px"><i style="width:4%"></i></div><span class="t" style="margin-top:2px">$24</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SHOT 4 : SLA ============ -->
+    <div class="shot" id="s-sla" style="text-align:left">
+      <div class="browser">
+        <div class="browser-bar"><div class="dot3"><i></i><i></i><i></i></div><div class="url">app.digitori.ai/sla</div><div style="width:47px"></div></div>
+        <div class="cms">
+          <aside class="cms-side">
+            <div class="brand"><svg viewBox="0 0 32 32"><use href="#mark"/></svg>digitori</div>
+            <div class="snav">
+              <a>📁 <span data-en="Projects" data-vi="Dự án">Projects</span></a>
+              <a>🤖 Workers</a>
+              <a>💰 <span data-en="Cost" data-vi="Chi phí">Cost</span></a>
+              <a class="on">📈 SLA</a>
+              <a>🔌 <span data-en="Integrations" data-vi="Tích hợp">Integrations</span></a>
+              <a>⚙️ <span data-en="Settings" data-vi="Cài đặt">Settings</span></a>
+            </div>
+          </aside>
+          <div class="cms-main">
+            <div class="cms-h">
+              <h4 data-en="SLA & verified output" data-vi="SLA & output đã xác minh">SLA &amp; verified output</h4><span class="crumb">/ PRJ-042</span>
+              <div class="right"><span class="pill" style="color:var(--green);border-color:rgba(52,211,153,.4)">● on track</span></div>
+            </div>
+            <div class="kpis">
+              <div class="kpi"><div class="l" data-en="Delivery SLA" data-vi="SLA bàn giao">Delivery SLA</div><div class="v" style="color:var(--green)">99.2%</div><div class="d nt" data-en="target ≥ 98%" data-vi="mục tiêu ≥ 98%">target ≥ 98%</div></div>
+              <div class="kpi"><div class="l" data-en="Goal criteria met" data-vi="Tiêu chí goal đạt">Goal criteria met</div><div class="v">7/9</div><div class="d nt">2 <span data-en="in verify loop" data-vi="đang verify">in verify loop</span></div></div>
+              <div class="kpi"><div class="l" data-en="Test coverage" data-vi="Độ phủ test">Test coverage</div><div class="v">96%</div><div class="d up">▲ 4%</div></div>
+              <div class="kpi"><div class="l" data-en="Verify loops" data-vi="Vòng verify">Verify loops</div><div class="v">2/5</div><div class="d nt">max 5 · <span data-en="safety rail" data-vi="rào an toàn">safety rail</span></div></div>
+            </div>
+            <table class="tbl">
+              <thead><tr><th data-en="Goal success criterion" data-vi="Tiêu chí thành công của goal">Goal success criterion</th><th data-en="Measure" data-vi="Đo lường">Measure</th><th data-en="Result" data-vi="Kết quả">Result</th><th data-en="Evidence" data-vi="Bằng chứng">Evidence</th></tr></thead>
+              <tbody>
+                <tr><td data-en="Refund flow completes end-to-end" data-vi="Luồng hoàn tiền chạy trọn vẹn">Refund flow completes end-to-end</td><td class="mono">e2e suite</td><td><span class="tag ok">PASS</span></td><td class="mono">run #1842 · 41/41</td></tr>
+                <tr><td data-en="P95 latency under 300ms" data-vi="Độ trễ P95 dưới 300ms">P95 latency under 300ms</td><td class="mono">load test 500 rps</td><td><span class="tag ok">PASS · 212ms</span></td><td class="mono">k6 report</td></tr>
+                <tr><td data-en="Zero double-refund possible" data-vi="Không thể hoàn tiền trùng">Zero double-refund possible</td><td class="mono">adversarial verify</td><td><span class="tag ok">PASS</span></td><td class="mono">verifier v3</td></tr>
+                <tr><td data-en="Ops runbook published" data-vi="Runbook vận hành đã xuất bản">Ops runbook published</td><td class="mono">Confluence</td><td><span class="tag warn" data-en="IN LOOP" data-vi="ĐANG LẶP">IN LOOP</span></td><td class="mono">gap → re-spec</td></tr>
+                <tr><td data-en="Chargeback rate reporting live" data-vi="Báo cáo tỉ lệ chargeback hoạt động">Chargeback rate reporting live</td><td class="mono">dashboard probe</td><td><span class="tag warn" data-en="IN LOOP" data-vi="ĐANG LẶP">IN LOOP</span></td><td class="mono">loop 2/5</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap center">
+    <div class="sec-tag" data-en="Radical transparency" data-vi="Minh bạch tuyệt đối">Radical transparency</div>
+    <h2 class="sec-title"><span data-en="Autonomous doesn't mean" data-vi="Tự động không có nghĩa là">Autonomous doesn't mean</span> <span class="grad-text" data-en="opaque" data-vi="mờ mịt">opaque</span></h2>
+    <div class="trans-grid" style="text-align:left">
+      <div class="trans rv"><div class="ic">💰</div><h3 data-en="Estimation upfront" data-vi="Ước tính trước">Estimation upfront</h3><p data-en="Cost and token forecasts before work starts, budget caps enforced by the orchestrator, live burn-down as the factory runs." data-vi="Dự báo chi phí và token trước khi bắt đầu, trần ngân sách do orchestrator kiểm soát, burn-down trực tiếp trong khi nhà máy chạy.">Cost and token forecasts before work starts, budget caps enforced by the orchestrator, live burn-down as the factory runs.</p></div>
+      <div class="trans rv"><div class="ic">📊</div><h3 data-en="Progress in real time" data-vi="Tiến độ thời gian thực">Progress in real time</h3><p data-en="Every phase, task and commit visible as it happens — synced back to your Jira, Linear, Slack and Teams automatically." data-vi="Mọi phase, task và commit hiển thị ngay khi diễn ra — tự động đồng bộ về Jira, Linear, Slack và Teams của bạn.">Every phase, task and commit visible as it happens — synced back to your Jira, Linear, Slack and Teams automatically.</p></div>
+      <div class="trans rv"><div class="ic">🤝</div><h3 data-en="SLA-backed delivery" data-vi="Bàn giao theo SLA">SLA-backed delivery</h3><p data-en="Committed timelines with safety rails: broken baselines, constitution conflicts and max verify loops escalate to a human instantly." data-vi="Cam kết tiến độ với rào an toàn: baseline hỏng, xung đột constitution hay chạm trần vòng verify sẽ báo lên con người ngay lập tức.">Committed timelines with safety rails: broken baselines, constitution conflicts and max verify loops escalate to a human instantly.</p></div>
+      <div class="trans rv"><div class="ic">✅</div><h3 data-en="Output, proven" data-vi="Output, có bằng chứng">Output, proven</h3><p data-en="You don't receive code — you receive a verified outcome: working software plus a verification report proving each goal criterion." data-vi="Bạn không nhận code — bạn nhận một kết quả đã được xác minh: phần mềm chạy được kèm báo cáo verify chứng minh từng tiêu chí của mục tiêu.">You don't receive code — you receive a verified outcome: working software plus a verification report proving each goal criterion.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="tokenomics" style="padding-top:20px">
+  <div class="wrap">
+    <div class="center">
+      <div class="sec-tag" data-en="Tokenomics" data-vi="Tokenomics — Kinh tế token">Tokenomics</div>
+      <h2 class="sec-title"><span data-en="Idle tokens become" data-vi="Token nhàn rỗi trở thành">Idle tokens become</span> <span class="grad-text" data-en="working capital" data-vi="vốn sinh lời">working capital</span></h2>
+      <p class="sec-sub" style="margin:0 auto" data-en="Unused capacity shouldn't expire — it should earn. Digitori turns every account's token quota into a liquid economy: share what you don't use, invest in what the factory builds." data-vi="Hạn mức không dùng hết không nên hết hạn — nó nên sinh lời. Digitori biến quota token của mỗi tài khoản thành một nền kinh tế thanh khoản: chia sẻ phần bạn không dùng, đầu tư vào những gì nhà máy đang xây.">Unused capacity shouldn't expire — it should earn. Digitori turns every account's token quota into a liquid economy: share what you don't use, invest in what the factory builds.</p>
+    </div>
+
+    <div class="s4-wrap rv" style="margin-top:48px">
+      <div class="siv">
+        <div class="siv-node"><div class="k">👤</div><div class="t" data-en="Token holders · idle quota" data-vi="Người dùng · quota nhàn rỗi">Token holders · idle quota</div></div>
+        <div class="siv-arr">──▶</div>
+        <div class="siv-node goal"><div class="k">🏦</div><div class="t" data-en="Digitori Token Pool" data-vi="Digitori Token Pool">Digitori Token Pool</div></div>
+        <div class="siv-arr">──▶</div>
+        <div class="siv-node"><div class="k">🏭</div><div class="t" data-en="Factory projects consume" data-vi="Dự án nhà máy tiêu thụ">Factory projects consume</div></div>
+        <div class="siv-arr">──▶</div>
+        <div class="siv-node v"><div class="k">💸</div><div class="t" data-en="Revenue → payouts & yield" data-vi="Doanh thu → hoàn tiền & lợi nhuận">Revenue → payouts &amp; yield</div></div>
+      </div>
+      <div class="siv-loop" style="color:var(--cyan)" data-en="◀── every verified delivery feeds returns back to contributors and investors ──" data-vi="◀── mỗi lần bàn giao được xác minh đưa lợi nhuận về cho người chia sẻ và nhà đầu tư ──">◀── every verified delivery feeds returns back to contributors and investors ──</div>
+
+      <div class="s4-cols">
+        <div class="s4-col">
+          <h4>♻️ <span data-en="Share & earn back" data-vi="Chia sẻ & thu tiền về">Share &amp; earn back</span></h4>
+          <p data-en="Didn't burn your monthly quota? List your surplus tokens on the pool. Projects consume them at market rate and you get paid for capacity that would have expired worthless." data-vi="Không dùng hết quota tháng? Niêm yết token dư của bạn lên pool. Các dự án tiêu thụ chúng theo giá thị trường và bạn nhận tiền cho phần hạn mức lẽ ra hết hạn vô ích.">Didn't burn your monthly quota? List your surplus tokens on the pool. Projects consume them at market rate and you get paid for capacity that would have expired worthless.</p>
+          <div class="type-chips"><span class="tchip g mono" data-en="sell surplus" data-vi="bán phần dư">sell surplus</span><span class="tchip m mono" data-en="instant payout" data-vi="thanh toán ngay">instant payout</span></div>
+        </div>
+        <div class="s4-col">
+          <h4>📈 <span data-en="Invest & take yield" data-vi="Đầu tư & nhận lợi nhuận">Invest &amp; take yield</span></h4>
+          <p data-en="A second class of users doesn't build — they back. Stake tokens into specific factory projects and earn a share of delivery revenue, amplified by project leverage: bigger goals, bigger multiples, SLA-gated risk." data-vi="Một tập người dùng thứ hai không xây — họ hậu thuẫn. Stake token vào từng dự án cụ thể của nhà máy và hưởng phần doanh thu bàn giao, khuếch đại bằng đòn bẩy dự án: mục tiêu càng lớn, hệ số càng cao, rủi ro được chốt chặn bởi SLA.">A second class of users doesn't build — they back. Stake tokens into specific factory projects and earn a share of delivery revenue, amplified by project leverage: bigger goals, bigger multiples, SLA-gated risk.</p>
+          <div class="type-chips"><span class="tchip b mono" data-en="stake per project" data-vi="stake theo dự án">stake per project</span><span class="tchip m mono" data-en="leverage ×1–×3" data-vi="đòn bẩy ×1–×3">leverage ×1–×3</span></div>
+        </div>
+        <div class="s4-col">
+          <h4>🛡️ <span data-en="Trust by design" data-vi="Tin cậy từ thiết kế">Trust by design</span></h4>
+          <p data-en="Yield only unlocks when the Verify phase proves the goal was met — the same S4 gate that protects clients protects investors. Escrowed stakes, on-ledger token accounting, transparent burn per agent." data-vi="Lợi nhuận chỉ được mở khóa khi phase Verify chứng minh mục tiêu đã đạt — chính cánh cổng S4 bảo vệ client cũng bảo vệ nhà đầu tư. Stake ký quỹ, sổ cái token minh bạch, mức burn từng agent công khai.">Yield only unlocks when the Verify phase proves the goal was met — the same S4 gate that protects clients protects investors. Escrowed stakes, on-ledger token accounting, transparent burn per agent.</p>
+          <div class="type-chips"><span class="tchip g mono">verify-gated</span><span class="tchip m mono">escrow</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- token market mockup -->
+    <div class="browser rv" style="margin-top:28px">
+      <div class="browser-bar"><div class="dot3"><i></i><i></i><i></i></div><div class="url">app.digitori.ai/tokenomics</div><div style="width:47px"></div></div>
+      <div class="cms">
+        <aside class="cms-side">
+          <div class="brand"><svg viewBox="0 0 32 32"><use href="#mark"/></svg>digitori</div>
+          <div class="snav">
+            <a>📁 <span data-en="Projects" data-vi="Dự án">Projects</span></a>
+            <a>🤖 Workers</a>
+            <a>💰 <span data-en="Cost" data-vi="Chi phí">Cost</span></a>
+            <a>📈 SLA</a>
+            <a class="on">🪙 Tokenomics</a>
+            <a>⚙️ <span data-en="Settings" data-vi="Cài đặt">Settings</span></a>
+          </div>
+        </aside>
+        <div class="cms-main">
+          <div class="cms-h">
+            <h4 data-en="Token market" data-vi="Chợ token">Token market</h4><span class="crumb">/ pool</span>
+            <div class="right"><span class="pill mono">1 DTK ≈ $0.012</span><span class="pill" style="color:var(--green);border-color:rgba(52,211,153,.4)">● <span data-en="pool healthy" data-vi="pool ổn định">pool healthy</span></span></div>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><div class="l" data-en="Pool liquidity" data-vi="Thanh khoản pool">Pool liquidity</div><div class="v">2.1B <span style="font-size:12px;color:var(--dim)">DTK</span></div><div class="d up">▲ 6.4% <span data-en="this week" data-vi="tuần này">this week</span></div></div>
+            <div class="kpi"><div class="l" data-en="Your idle tokens" data-vi="Token nhàn rỗi của bạn">Your idle tokens</div><div class="v">4.8M</div><div class="d nt" data-en="expires in 11 days" data-vi="hết hạn sau 11 ngày">expires in 11 days</div></div>
+            <div class="kpi"><div class="l" data-en="Earned back" data-vi="Đã thu về">Earned back</div><div class="v" style="color:var(--green)">$412</div><div class="d up">▲ $57 <span data-en="this month" data-vi="tháng này">this month</span></div></div>
+            <div class="kpi"><div class="l" data-en="Avg. investor APY" data-vi="APY nhà đầu tư TB">Avg. investor APY</div><div class="v grad-text">14.2%</div><div class="d nt" data-en="verify-gated" data-vi="chốt bởi verify">verify-gated</div></div>
+          </div>
+          <div class="split">
+            <div class="panel">
+              <div class="pt" data-en="Open investment rounds — stake into factory projects" data-vi="Vòng đầu tư đang mở — stake vào dự án nhà máy">Open investment rounds — stake into factory projects</div>
+              <table class="tbl">
+                <thead><tr><th data-en="Project" data-vi="Dự án">Project</th><th data-en="Leverage" data-vi="Đòn bẩy">Leverage</th><th data-en="Filled" data-vi="Đã gọi">Filled</th><th data-en="Est. yield" data-vi="Lợi nhuận ước tính">Est. yield</th></tr></thead>
+                <tbody>
+                  <tr><td>fintech-core <span class="tag mig">migrate</span></td><td class="mono">×2.0</td><td><div class="bar"><i style="width:82%"></i></div></td><td class="mono up">+18.5%</td></tr>
+                  <tr><td>retail-ai-suite <span class="tag ok">green</span></td><td class="mono">×1.4</td><td><div class="bar"><i style="width:56%"></i></div></td><td class="mono up">+11.0%</td></tr>
+                  <tr><td>gov-portal-revamp <span class="tag warn">brown</span></td><td class="mono">×2.8</td><td><div class="bar"><i style="width:31%"></i></div></td><td class="mono up">+24.9%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="panel">
+              <div class="pt" data-en="Your token ledger" data-vi="Sổ cái token của bạn">Your token ledger</div>
+              <div class="feed">
+                <div><span class="t">Aug 03</span><span><b>+$36.20</b> — 3.0M DTK <span data-en="consumed by" data-vi="được tiêu thụ bởi">consumed by</span> <b>payment-service</b></span></div>
+                <div><span class="t">Aug 01</span><span><b>+$121.40</b> <span data-en="yield unlocked — data-warehouse verified ✓" data-vi="lợi nhuận mở khóa — data-warehouse đã verify ✓">yield unlocked — data-warehouse verified ✓</span></span></div>
+                <div><span class="t">Jul 29</span><span><span data-en="Staked 8.0M DTK into" data-vi="Đã stake 8.0M DTK vào">Staked 8.0M DTK into</span> <b>fintech-core</b> · ×2.0</span></div>
+                <div><span class="t">Jul 28</span><span><span data-en="Listed 5.2M surplus DTK on pool" data-vi="Niêm yết 5.2M DTK dư lên pool">Listed 5.2M surplus DTK on pool</span></span></div>
+                <div><span class="t">Jul 25</span><span><b>+$48.75</b> — <span data-en="pool payout, instant" data-vi="thanh toán từ pool, tức thì">pool payout, instant</span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="center" style="margin-top:18px;font-size:12px;color:var(--dim)" data-en="Illustrative figures. Returns depend on project performance; stakes are escrowed and released only on verified delivery." data-vi="Số liệu minh họa. Lợi nhuận phụ thuộc hiệu quả dự án; stake được ký quỹ và chỉ giải ngân khi bàn giao được xác minh.">Illustrative figures. Returns depend on project performance; stakes are escrowed and released only on verified delivery.</p>
+  </div>
+</section>
+
+<section id="cta" style="padding-top:10px">
+  <div class="wrap">
+    <div class="cta-box rv">
+      <h2><span data-en="Stop managing developers." data-vi="Đừng quản lý developer nữa.">Stop managing developers.</span><br><span class="grad-text" data-en="Start approving goals." data-vi="Hãy bắt đầu duyệt mục tiêu.">Start approving goals.</span></h2>
+      <p data-en="Join the early access program and put the first autonomous digital factory to work on your green, brown or migration project." data-vi="Tham gia chương trình early access và để nhà máy số tự động đầu tiên bắt tay vào dự án green, brown hoặc migration của bạn.">Join the early access program and put the first autonomous digital factory to work on your green, brown or migration project.</p>
+      <div class="cta-row" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <a class="btn btn-primary" href="mailto:hello@digitori.ai" data-en="Request early access →" data-vi="Đăng ký early access →">Request early access →</a>
+        <a class="btn btn-ghost" href="https://github.com/nguyenvietvu/s4" target="_blank" rel="noopener" data-en="Read the S4 philosophy" data-vi="Đọc triết lý S4">Read the S4 philosophy</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="#"><svg class="logo-mark" viewBox="0 0 32 32"><use href="#mark"/></svg>digitori</a>
+    <span data-en="Digital Factory · AI as a Service" data-vi="Digital Factory · AI as a Service">Digital Factory · AI as a Service</span>
+    <div class="links">
+      <a href="#agents" data-en="Workers" data-vi="Workers">Workers</a>
+      <a href="#s4">S4</a>
+      <a href="#platform" data-en="Platform" data-vi="Nền tảng">Platform</a>
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="https://github.com/nguyenvietvu/s4" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------- i18n ---------- */
+function setLang(l){
+  document.querySelectorAll('[data-en]').forEach(el=>{ el.innerHTML = el.dataset[l] || el.dataset.en; });
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
+  document.documentElement.lang = l;
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.shot').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.shot).classList.add('active');
+  });
+});
+
+/* ---------- scroll reveal ---------- */
+const io = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* ---------- pipeline demo animation ---------- */
+(function(){
+  const nodes=[...document.querySelectorAll('.pipe-node')];
+  let i=3;
+  setInterval(()=>{
+    nodes.forEach(n=>n.classList.remove('act'));
+    nodes[i].classList.add('act');
+    nodes.slice(0,i).forEach(n=>n.classList.add('done'));
+    i=(i+1)%nodes.length;
+    if(i===0){nodes.forEach(n=>n.classList.remove('done'));}
+  },2600);
+})();
+</script>
+
+</body>
+</html>
